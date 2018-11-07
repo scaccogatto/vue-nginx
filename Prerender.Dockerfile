@@ -6,6 +6,6 @@ ADD https://raw.githubusercontent.com/scaccogatto/vue-nginx/master/conf/prerende
 
 COPY dist /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["sh", "-c", "envsubst '${PRERENDER_SERVER}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"]
