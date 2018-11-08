@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: prerender
+  namespace: vue-nginx
+  labels:
+    app: prerender
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prerender
+        tier: cache
+    spec:
+      serviceAccountName: vue-nginx
+      containers:
+      - name: server
+        # image: prerender
+        ports:
+        - name: server
+          containerPort: 3000
+        readinessProbe:
+          exec:
+            command:
+            - echo
+            - "ciao"
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        livenessProbe:
+          exec:
+            command:
+            - echo
+            - "ciao"
+          periodSeconds: 15

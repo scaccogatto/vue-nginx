@@ -1,0 +1,46 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vue-nginx
+  namespace: vue-nginx
+  labels:
+    app: vue-nginx
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vue-nginx
+        tier: webapp
+    spec:
+      serviceAccountName: vue-nginx
+      containers:
+      - name: file-server
+        # image: vue-nginx:latest
+        ports:
+        - name: http
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          periodSeconds: 15
+        env:
+        - name: PRERENDER_SERVER
+          value: "prerender:3000"
+        - name: PRERENDER_RESOLVER
+          value: "127.0.0.1:53 ipv6=off"
+      - name: dnsmasq
+        image: "janeczku/go-dnsmasq:release-1.0.7"
+        args:
+          - --listen
+          - "127.0.0.1:53"
+          - --default-resolver
+          - --append-search-domains
+          - --hostsfile=/etc/hosts
